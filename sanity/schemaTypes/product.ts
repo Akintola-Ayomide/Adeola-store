@@ -1,0 +1,216 @@
+import { defineField, defineType } from "sanity";
+
+export const product = defineType({
+  name: "product",
+  title: "Product",
+  type: "document",
+  groups: [
+    { name: "details", title: "Details", default: true },
+    { name: "media", title: "Images" },
+    { name: "shop", title: "Shop settings" },
+  ],
+  fields: [
+    defineField({
+      name: "name",
+      title: "Product name",
+      type: "string",
+      group: "details",
+      validation: (Rule) => Rule.required().min(3).max(100),
+    }),
+    defineField({
+      name: "slug",
+      title: "URL slug",
+      type: "slug",
+      group: "details",
+      options: { source: "name", maxLength: 100 },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "shortDescription",
+      title: "Short description",
+      type: "text",
+      rows: 3,
+      group: "details",
+      description: "One or two sentences, shown on cards and in search results.",
+      validation: (Rule) => Rule.required().min(20).max(220),
+    }),
+    defineField({
+      name: "description",
+      title: "Full description",
+      type: "text",
+      rows: 8,
+      group: "details",
+      description:
+        "Tell the story of the cloth, fit and occasion. Separate paragraphs with a blank line.",
+      validation: (Rule) => Rule.required().min(60).max(4000),
+    }),
+    defineField({
+      name: "price",
+      title: "Price (NGN)",
+      type: "number",
+      group: "shop",
+      description: "Whole naira, e.g. 285000. No commas or currency symbol.",
+      validation: (Rule) => Rule.required().min(0).precision(0),
+    }),
+    defineField({
+      name: "category",
+      title: "Category",
+      type: "reference",
+      group: "shop",
+      to: [{ type: "category" }],
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "collections",
+      title: "Collections",
+      type: "array",
+      group: "shop",
+      of: [{ type: "reference", to: [{ type: "collection" }] }],
+      description: "A product can belong to more than one collection.",
+      validation: (Rule) => Rule.max(4),
+    }),
+    defineField({
+      name: "fabric",
+      title: "Fabric",
+      type: "string",
+      group: "details",
+      description: "e.g. French corded lace, satin lining.",
+      validation: (Rule) => Rule.max(120),
+    }),
+    defineField({
+      name: "sizes",
+      title: "Available sizes",
+      type: "array",
+      group: "shop",
+      of: [{ type: "string" }],
+      options: { layout: "tags" },
+      description: "e.g. UK 8, UK 10, or Made to measure.",
+      validation: (Rule) => Rule.max(12),
+    }),
+    defineField({
+      name: "colours",
+      title: "Colours",
+      type: "array",
+      group: "shop",
+      of: [
+        {
+          type: "object",
+          name: "colour",
+          title: "Colour",
+          fields: [
+            defineField({
+              name: "name",
+              title: "Name",
+              type: "string",
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: "value",
+              title: "Swatch",
+              type: "color",
+              options: { disableAlpha: true },
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+          preview: {
+            select: { title: "name", hex: "value.hex" },
+            prepare({ title, hex }) {
+              return { title, subtitle: hex };
+            },
+          },
+        },
+      ],
+      validation: (Rule) => Rule.max(6),
+    }),
+    defineField({
+      name: "reference",
+      title: "Product reference",
+      type: "string",
+      group: "details",
+      description: "Internal code, e.g. ARK-LC-014.",
+      validation: (Rule) => Rule.max(40),
+    }),
+    defineField({
+      name: "image",
+      title: "Main image",
+      type: "imageWithAlt",
+      group: "media",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "gallery",
+      title: "Additional images",
+      type: "array",
+      group: "media",
+      of: [{ type: "imageWithAlt" }],
+      description: "The main image is added first automatically. Add detail shots here.",
+      validation: (Rule) => Rule.max(6),
+    }),
+    defineField({
+      name: "availability",
+      title: "Availability",
+      type: "string",
+      group: "shop",
+      options: {
+        list: [
+          { title: "In stock", value: "in_stock" },
+          { title: "Low stock", value: "low_stock" },
+          { title: "Out of stock (waitlist)", value: "out_of_stock" },
+          { title: "Made to order", value: "made_to_order" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "in_stock",
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: "featured",
+      title: "Featured on homepage",
+      type: "boolean",
+      group: "shop",
+      initialValue: false,
+    }),
+    defineField({
+      name: "newArrival",
+      title: "New arrival",
+      type: "boolean",
+      group: "shop",
+      initialValue: false,
+    }),
+    defineField({
+      name: "sortOrder",
+      title: "Sort order",
+      type: "number",
+      group: "shop",
+      description: "Lower numbers appear first in the shop.",
+      initialValue: 999,
+      validation: (Rule) => Rule.integer().min(0),
+    }),
+  ],
+  orderings: [
+    {
+      title: "Display order",
+      name: "sortOrderAsc",
+      by: [{ field: "sortOrder", direction: "asc" }],
+    },
+    {
+      title: "Price: low to high",
+      name: "priceAsc",
+      by: [{ field: "price", direction: "asc" }],
+    },
+  ],
+  preview: {
+    select: {
+      title: "name",
+      subtitle: "price",
+      media: "image",
+    },
+    prepare({ title, subtitle, media }) {
+      return {
+        title,
+        subtitle: subtitle ? `₦${Number(subtitle).toLocaleString("en-NG")}` : "",
+        media,
+      };
+    },
+  },
+});
