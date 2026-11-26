@@ -40,7 +40,7 @@ export default defineConfig({
             S.documentTypeListItem("category").title("Categories"),
             S.documentTypeListItem("collection").title("Collections"),
             S.divider(),
-            S.documentTypeListItems().filter(
+            ...S.documentTypeListItems().filter(
               (item) =>
                 item.getId() !== "product" &&
                 item.getId() !== "category" &&

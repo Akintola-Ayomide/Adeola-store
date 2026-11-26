@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ArrowUpRight, Instagram, Mail, MapPin } from "lucide-react";
-import { WhatsAppIcon } from "@/components/icons";
+import { ArrowUpRight, Mail, MapPin } from "lucide-react";
+import { InstagramIcon, WhatsAppIcon } from "@/components/icons";
 import type { Category, Collection, SiteSettings } from "@/lib/types";
 import { buildGeneralEnquiry, buildWhatsAppUrl } from "@/lib/whatsapp";
 
@@ -59,7 +59,7 @@ export function SiteFooter({
                   aria-label="Instagram"
                   className="inline-flex size-10 items-center justify-center border border-bone/20 text-bone transition-colors hover:border-bone hover:bg-bone hover:text-ink"
                 >
-                  <Instagram className="size-4" strokeWidth={1.5} />
+                  <InstagramIcon className="size-4" strokeWidth={1.5} />
                 </a>
               ) : null}
               {whatsappUrl ? (

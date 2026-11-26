@@ -3,14 +3,13 @@ import Link from "next/link";
 import {
   ArrowRight,
   Clock3,
-  Instagram,
   Mail,
   MapPin,
   MessageCircle,
 } from "lucide-react";
 import { EnquiryForm } from "@/components/contact/enquiry-form";
 import { JsonLd } from "@/components/json-ld";
-import { WhatsAppIcon } from "@/components/icons";
+import { InstagramIcon, WhatsAppIcon } from "@/components/icons";
 import { WhatsAppLink } from "@/components/whatsapp-link";
 import { getSiteSettings } from "@/lib/data";
 import { breadcrumbJsonLd } from "@/lib/seo";
@@ -195,7 +194,7 @@ export default async function ContactPage() {
 
                 {instagram ? (
                   <div className="flex gap-3">
-                    <Instagram
+                    <InstagramIcon
                       className="mt-0.5 size-4 shrink-0 text-ink-soft"
                       strokeWidth={1.5}
                     />

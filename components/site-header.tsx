@@ -40,8 +40,10 @@ export function SiteHeader({ settings, categories }: SiteHeaderProps) {
     buildWhatsAppUrl(settings.whatsappPhone, buildGeneralEnquiry()) ?? null;
 
   useEffect(() => {
-    setMenuOpen(false);
-    setSearchOpen(false);
+    // Close any open overlay on navigation; the dialogs' onClose handlers
+    // keep the React state in sync.
+    menuRef.current?.close();
+    searchRef.current?.close();
   }, [pathname]);
 
   useEffect(() => {

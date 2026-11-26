@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Instagram } from "lucide-react";
+import { InstagramIcon } from "@/components/icons";
 import type { CmsImage, SiteSettings } from "@/lib/types";
 
 export function SocialStrip({
@@ -32,7 +32,7 @@ export function SocialStrip({
             : {})}
           className="inline-flex items-center gap-2 self-start text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-soft transition-colors hover:text-ink md:self-auto"
         >
-          <Instagram className="size-4" strokeWidth={1.5} />
+          <InstagramIcon className="size-4" strokeWidth={1.5} />
           {settings.instagramHandle || "Instagram"}
         </a>
       </div>
@@ -61,7 +61,7 @@ export function SocialStrip({
               className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
             />
             <span className="absolute inset-0 flex items-center justify-center bg-ink/0 text-paper opacity-0 transition-all duration-300 group-hover:bg-ink/30 group-hover:opacity-100">
-              <Instagram className="size-5" strokeWidth={1.5} />
+              <InstagramIcon className="size-5" strokeWidth={1.5} />
             </span>
           </a>
         ))}

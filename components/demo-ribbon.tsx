@@ -1,22 +1,42 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 const STORAGE_KEY = "arike-demo-ribbon-dismissed";
+const listeners = new Set<() => void>();
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+function getSnapshot() {
+  try {
+    return window.sessionStorage.getItem(STORAGE_KEY) !== "1";
+  } catch {
+    // Session storage may be unavailable in private modes; keep the notice.
+    return true;
+  }
+}
+
+function getServerSnapshot() {
+  return true;
+}
 
 export function DemoRibbon() {
-  const [visible, setVisible] = useState(true);
+  const visible = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  useEffect(() => {
+  function dismiss() {
     try {
-      if (window.sessionStorage.getItem(STORAGE_KEY) === "1") {
-        setVisible(false);
-      }
+      window.sessionStorage.setItem(STORAGE_KEY, "1");
     } catch {
-      // Session storage may be unavailable in private modes; keep the notice.
+      // Ignore storage errors.
     }
-  }, []);
+    for (const listener of listeners) listener();
+  }
 
   if (!visible) return null;
 
@@ -32,14 +52,7 @@ export function DemoRibbon() {
         </p>
         <button
           type="button"
-          onClick={() => {
-            setVisible(false);
-            try {
-              window.sessionStorage.setItem(STORAGE_KEY, "1");
-            } catch {
-              // Ignore storage errors.
-            }
-          }}
+          onClick={dismiss}
           className="absolute right-3 inline-flex size-8 items-center justify-center text-ink/70 transition-colors hover:text-ink"
           aria-label="Dismiss demo notice"
         >

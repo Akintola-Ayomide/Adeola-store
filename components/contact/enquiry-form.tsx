@@ -7,7 +7,7 @@ import {
   Loader2,
   Mail,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useForm } from "react-hook-form";
 import { WhatsAppIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -131,6 +131,10 @@ export function EnquiryForm() {
     }
   }
 
+  function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
+    void handleSubmit(onSubmit)(event);
+  }
+
   if (state.kind === "sent") {
     return (
       <div
@@ -210,7 +214,7 @@ export function EnquiryForm() {
   return (
     <form
       noValidate
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleFormSubmit}
       className="border border-line bg-paper p-6 md:p-8"
       aria-busy={isSubmitting}
     >
