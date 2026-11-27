@@ -58,15 +58,16 @@ export default function OpengraphImage() {
           />
           <div
             style={{
+              display: "flex",
+              flexDirection: "column",
               fontSize: 78,
               lineHeight: 1.04,
               letterSpacing: -2,
               maxWidth: 920,
             }}
           >
-            Nigerian occasion wear,
-            <br />
-            made to be worn.
+            <div>Nigerian occasion wear,</div>
+            <div>made to be worn.</div>
           </div>
           <div
             style={{
