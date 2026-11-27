@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { JsonLd } from "@/components/json-ld";
 import { ProductGrid } from "@/components/product-grid";
 import { ShopControls } from "@/components/shop/shop-controls";
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Shop Nigerian occasion wear — ÀRÌKÉ",
     description:
-      "Lace gowns, aso-ebi, aso-oke, ankara and iro & buba, made in Lagos.",
+      "Lace, aso-ebi, aso-oke, ankara and iro & buba, made in Lagos.",
     url: "/shop",
   },
 };
@@ -48,33 +49,11 @@ function normaliseAvailability(value: string): string {
     : "";
 }
 
-export default async function ShopPage({
+export default function ShopPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
-  const params = await searchParams;
-  const [settings, products, categories] = await Promise.all([
-    getSiteSettings(),
-    getProducts(),
-    getCategories(),
-  ]);
-
-  const filters: ProductFilters = {
-    query: first(params.q).slice(0, 120),
-    category: categories.some((category) => category.slug === first(params.category))
-      ? first(params.category)
-      : "",
-    availability: normaliseAvailability(first(params.availability)),
-    sort: normaliseSort(first(params.sort)),
-  };
-
-  const results = filterProducts(products, filters);
-  const hasCatalogue = products.length > 0;
-  const hasFilters = Boolean(
-    filters.query || filters.category || filters.availability,
-  );
-
   return (
     <>
       <JsonLd
@@ -118,6 +97,50 @@ export default async function ShopPage({
         </div>
       </section>
 
+      <Suspense fallback={<ShopResultsFallback />}>
+        <ShopResults searchParams={searchParams} />
+      </Suspense>
+    </>
+  );
+}
+
+function ShopResultsFallback() {
+  return (
+    <p className="container-editorial py-10 text-[13px] text-ink-soft">
+      Loading the collection…
+    </p>
+  );
+}
+
+async function ShopResults({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const params = await searchParams;
+  const [settings, products, categories] = await Promise.all([
+    getSiteSettings(),
+    getProducts(),
+    getCategories(),
+  ]);
+
+  const filters: ProductFilters = {
+    query: first(params.q).slice(0, 120),
+    category: categories.some((category) => category.slug === first(params.category))
+      ? first(params.category)
+      : "",
+    availability: normaliseAvailability(first(params.availability)),
+    sort: normaliseSort(first(params.sort)),
+  };
+
+  const results = filterProducts(products, filters);
+  const hasCatalogue = products.length > 0;
+  const hasFilters = Boolean(
+    filters.query || filters.category || filters.availability,
+  );
+
+  return (
+    <>
       <ShopControls categories={categories} filters={filters} count={results.length} />
 
       <section className="container-editorial py-8 md:py-12">

@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
+import { getCachedNow } from "@/lib/cached-time";
 import { getCategories, getCollections, getProducts } from "@/lib/data";
 import { absoluteUrl } from "@/lib/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const lastModified = new Date();
+  const lastModified = await getCachedNow();
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: absoluteUrl("/"), lastModified, changeFrequency: "weekly", priority: 1 },

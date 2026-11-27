@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Mail, MapPin } from "lucide-react";
 import { InstagramIcon, WhatsAppIcon } from "@/components/icons";
+import { getCachedNow } from "@/lib/cached-time";
 import type { Category, Collection, SiteSettings } from "@/lib/types";
 import { buildGeneralEnquiry, buildWhatsAppUrl } from "@/lib/whatsapp";
 
@@ -10,11 +11,12 @@ type SiteFooterProps = {
   collections: Pick<Collection, "id" | "name" | "slug">[];
 };
 
-export function SiteFooter({
+export async function SiteFooter({
   settings,
   categories,
   collections,
 }: SiteFooterProps) {
+  const year = (await getCachedNow()).getFullYear();
   const whatsappUrl = buildWhatsAppUrl(
     settings.whatsappPhone,
     buildGeneralEnquiry(),
@@ -219,8 +221,7 @@ export function SiteFooter({
 
         <div className="mt-14 flex flex-col gap-4 border-t border-bone/15 pt-6 text-[11px] text-bone/45 md:flex-row md:items-center md:justify-between">
           <p>
-            © {new Date().getFullYear()} {settings.boutiqueName}. All rights
-            reserved.
+            © {year} {settings.boutiqueName}. All rights reserved.
           </p>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
             <Link href="/customer-care" className="hover:text-bone">
