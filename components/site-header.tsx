@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { WhatsAppIcon } from "@/components/icons";
 import type { Category, SiteSettings } from "@/lib/types";
@@ -23,13 +23,56 @@ function isActive(pathname: string, matches: string[]) {
   );
 }
 
+// `usePathname()` is only known at request time. Keeping it in its own
+// Suspense-wrapped component lets the rest of the header stay in the
+// prerendered shell; the fallback renders the same links without the active
+// styling.
+function NavLinks() {
+  const pathname = usePathname();
+
+  return (
+    <ul className="flex items-center gap-7">
+      {navItems.map((item) => (
+        <li key={item.href}>
+          <Link
+            href={item.href}
+            className={cn(
+              "link-underline text-[12px] font-medium tracking-[0.02em] text-ink/80 transition-colors hover:text-ink",
+              isActive(pathname, item.matches) &&
+                "text-ink after:scale-x-100 after:origin-left",
+            )}
+          >
+            {item.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function NavLinksFallback() {
+  return (
+    <ul className="flex items-center gap-7">
+      {navItems.map((item) => (
+        <li key={item.href}>
+          <Link
+            href={item.href}
+            className="link-underline text-[12px] font-medium tracking-[0.02em] text-ink/80 transition-colors hover:text-ink"
+          >
+            {item.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 type SiteHeaderProps = {
   settings: SiteSettings;
   categories: Pick<Category, "id" | "name" | "slug">[];
 };
 
 export function SiteHeader({ settings, categories }: SiteHeaderProps) {
-  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const menuRef = useRef<HTMLDialogElement>(null);
@@ -38,13 +81,6 @@ export function SiteHeader({ settings, categories }: SiteHeaderProps) {
 
   const whatsappUrl =
     buildWhatsAppUrl(settings.whatsappPhone, buildGeneralEnquiry()) ?? null;
-
-  useEffect(() => {
-    // Close any open overlay on navigation; the dialogs' onClose handlers
-    // keep the React state in sync.
-    menuRef.current?.close();
-    searchRef.current?.close();
-  }, [pathname]);
 
   useEffect(() => {
     const dialog = menuRef.current;
@@ -96,22 +132,9 @@ export function SiteHeader({ settings, categories }: SiteHeaderProps) {
               </button>
 
               <nav aria-label="Main navigation" className="hidden md:block">
-                <ul className="flex items-center gap-7">
-                  {navItems.map((item) => (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          "link-underline text-[12px] font-medium tracking-[0.02em] text-ink/80 transition-colors hover:text-ink",
-                          isActive(pathname, item.matches) &&
-                            "text-ink after:scale-x-100 after:origin-left",
-                        )}
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                <Suspense fallback={<NavLinksFallback />}>
+                  <NavLinks />
+                </Suspense>
               </nav>
             </div>
 
