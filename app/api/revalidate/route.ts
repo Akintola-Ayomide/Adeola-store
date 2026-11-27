@@ -1,8 +1,6 @@
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
-
 /**
  * Optional webhook target for Sanity publish events.
  * Configure SANITY_REVALIDATE_SECRET and send it as `x-revalidate-secret`.

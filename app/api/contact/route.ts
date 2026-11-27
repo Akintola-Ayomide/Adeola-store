@@ -3,8 +3,6 @@ import { getSiteSettings } from "@/lib/data";
 import { contactPayloadSchema } from "@/lib/validation/contact";
 import { buildContactWhatsAppMessage, buildWhatsAppUrl } from "@/lib/whatsapp";
 
-export const dynamic = "force-dynamic";
-
 const WINDOW_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
 const attempts = new Map<string, number[]>();
